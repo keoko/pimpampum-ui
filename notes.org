@@ -1,9 +1,12 @@
 * Notes
 ** DONE get todomvc elm port
 CLOSED: [2016-06-15 Wed 19:46]
-** TODO hello world in elm
+** DONE hello world in elm
+CLOSED: [2016-06-15 Wed 20:03]
 elm-make Pimpampum.elm
 elm package install elm-lang/html
+** TODO basic model-view-update structure
+** TODO elm-reactor depends on google font apis
 ** TODO list items
 ** TODO add items
 ** TODO delete item
