@@ -1,0 +1,12 @@
+* Notes
+** DONE get todomvc elm port
+CLOSED: [2016-06-15 Wed 19:46]
+** TODO hello world in elm
+elm-make Pimpampum.elm
+elm package install elm-lang/html
+** TODO list items
+** TODO add items
+** TODO delete item
+** TODO update item
+** TODO connect with REST API
+** TODO connect via Phoenix web socket API
