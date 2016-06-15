@@ -9,15 +9,22 @@ main = Html.beginnerProgram { model = initialModel, view = view, update = update
 type Msg = Reverse
 
 type alias Model =
-    { name : String }
+    { id : Int
+    , sku : String
+    , name : String
+    , description : String
+    }
 
 initialModel : Model
-initialModel = {name = "test"}
+initialModel = { id = 1
+               , sku = "sku1"
+               , name = "test1"
+               , description = "description1"
+               }
 
 update msg model =
     case msg of
-        Reverse -> {name = String.reverse model.name}
-
+        Reverse -> {model | name = String.reverse model.name}
 
 view model =
     div []
