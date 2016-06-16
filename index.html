@@ -7190,17 +7190,76 @@ var _elm_lang$html$Html_Events$Options = F2(
 	function (a, b) {
 		return {stopPropagation: a, preventDefault: b};
 	});
+var _user$project$Main$itemView = function (item) {
+	return A2(
+		_elm_lang$html$Html$li,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('id:'),
+						_elm_lang$html$Html$text(
+						_elm_lang$core$Basics$toString(item.id))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('name:'),
+						_elm_lang$html$Html$text(item.name)
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('sku:'),
+						_elm_lang$html$Html$text(item.sku)
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('description:'),
+						_elm_lang$html$Html$text(item.description)
+					]))
+			]));
+};
+var _user$project$Main$itemListView = function (items) {
+	return A2(
+		_elm_lang$html$Html$ul,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$id('item-list')
+			]),
+		A2(_elm_lang$core$List$map, _user$project$Main$itemView, items));
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				name: _elm_lang$core$String$reverse(model.name)
-			});
+		return model;
 	});
-var _user$project$Main$initialModel = {id: 1, sku: 'sku1', name: 'test1', description: 'description1'};
-var _user$project$Main$Model = F4(
+var _user$project$Main$initialModel = {
+	items: _elm_lang$core$Native_List.fromArray(
+		[
+			{id: 1, sku: 'sku1', name: 'test1', description: 'description1'},
+			{id: 1, sku: 'sku2', name: 'test1', description: 'description1'}
+		])
+};
+var _user$project$Main$Model = function (a) {
+	return {items: a};
+};
+var _user$project$Main$Item = F4(
 	function (a, b, c, d) {
 		return {id: a, sku: b, name: c, description: d};
 	});
@@ -7220,14 +7279,7 @@ var _user$project$Main$view = function (model) {
 					[
 						_elm_lang$html$Html$text('pimpampum-ui')
 					])),
-				A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(model.name)
-					])),
+				_user$project$Main$itemListView(model.items),
 				A2(
 				_elm_lang$html$Html$button,
 				_elm_lang$core$Native_List.fromArray(
