@@ -2,12 +2,11 @@ import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import String exposing (reverse)
 
 main = Html.beginnerProgram { model = initialModel, view = view, update = update }
 
 -- Model
-type Msg = Reverse
+type Msg = Delete Int
 
 type alias Model =
     { items : List Item }
@@ -27,7 +26,7 @@ initialModel = {
          , name = "test1"
          , description = "description1"
          }
-        ,{ id = 1
+        ,{ id = 2
          , sku = "sku2"
          , name = "test1"
          , description = "description1"
@@ -35,9 +34,10 @@ initialModel = {
         ]}
 
 -- Update
-update msg model = model
-    -- case msg of
-    --     Reverse -> {model | name = String.reverse model.name}
+update msg model = 
+    case msg of
+        Delete id ->
+            { model | items = List.filter (\i -> i.id /= id) model.items }
 
 
 -- Views
@@ -49,6 +49,7 @@ itemView item =
         ,div [] [text "name:", text item.name]
         ,div [] [text "sku:", text item.sku]
         ,div [] [text "description:", text item.description]
+        ,button [onClick (Delete item.id)] [text "delete"]
         ]
 
 
@@ -56,4 +57,4 @@ view model =
     div []
         [h1 [] [text "pimpampum-ui"]
         , itemListView model.items
-        , button [onClick Reverse] [text "reverse"]]
+        ]

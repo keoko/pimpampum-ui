@@ -9,12 +9,26 @@ elm package install elm-lang/html
 CLOSED: [2016-06-16 Thu 07:41]
 ** DONE list items
 CLOSED: [2016-06-16 Thu 08:11]
+** DONE delete item
+CLOSED: [2016-06-16 Thu 17:56]
 ** TODO add items
+** TODO update items
+** TODO connect with REST API
+** TODO connect via Phoenix web socket API
 ** TODO elm-reactor depends on google font apis
 ** TODO unit testing
 ** TODO console.log
 ** TODO how to debug
-** TODO delete item
-** TODO update item
-** TODO connect with REST API
-** TODO connect via Phoenix web socket API
+** TODO bootstrap
+
+* Nice To Have
+** TODO Auth
+** TODO Sort by column
+** TODO Max number of items per page
+
+* Spacemacs
+** elm mode 
+*** go to function declaration
+*** run reactor/make
+** misc
+*** enclose with parenthesis a region

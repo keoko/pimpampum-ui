@@ -7190,6 +7190,37 @@ var _elm_lang$html$Html_Events$Options = F2(
 	function (a, b) {
 		return {stopPropagation: a, preventDefault: b};
 	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				items: A2(
+					_elm_lang$core$List$filter,
+					function (i) {
+						return !_elm_lang$core$Native_Utils.eq(i.id, _p0._0);
+					},
+					model.items)
+			});
+	});
+var _user$project$Main$initialModel = {
+	items: _elm_lang$core$Native_List.fromArray(
+		[
+			{id: 1, sku: 'sku1', name: 'test1', description: 'description1'},
+			{id: 2, sku: 'sku2', name: 'test1', description: 'description1'}
+		])
+};
+var _user$project$Main$Model = function (a) {
+	return {items: a};
+};
+var _user$project$Main$Item = F4(
+	function (a, b, c, d) {
+		return {id: a, sku: b, name: c, description: d};
+	});
+var _user$project$Main$Delete = function (a) {
+	return {ctor: 'Delete', _0: a};
+};
 var _user$project$Main$itemView = function (item) {
 	return A2(
 		_elm_lang$html$Html$li,
@@ -7233,6 +7264,17 @@ var _user$project$Main$itemView = function (item) {
 					[
 						_elm_lang$html$Html$text('description:'),
 						_elm_lang$html$Html$text(item.description)
+					])),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(
+						_user$project$Main$Delete(item.id))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('delete')
 					]))
 			]));
 };
@@ -7245,25 +7287,6 @@ var _user$project$Main$itemListView = function (items) {
 			]),
 		A2(_elm_lang$core$List$map, _user$project$Main$itemView, items));
 };
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		return model;
-	});
-var _user$project$Main$initialModel = {
-	items: _elm_lang$core$Native_List.fromArray(
-		[
-			{id: 1, sku: 'sku1', name: 'test1', description: 'description1'},
-			{id: 1, sku: 'sku2', name: 'test1', description: 'description1'}
-		])
-};
-var _user$project$Main$Model = function (a) {
-	return {items: a};
-};
-var _user$project$Main$Item = F4(
-	function (a, b, c, d) {
-		return {id: a, sku: b, name: c, description: d};
-	});
-var _user$project$Main$Reverse = {ctor: 'Reverse'};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -7279,17 +7302,7 @@ var _user$project$Main$view = function (model) {
 					[
 						_elm_lang$html$Html$text('pimpampum-ui')
 					])),
-				_user$project$Main$itemListView(model.items),
-				A2(
-				_elm_lang$html$Html$button,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Events$onClick(_user$project$Main$Reverse)
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('reverse')
-					]))
+				_user$project$Main$itemListView(model.items)
 			]));
 };
 var _user$project$Main$main = {
