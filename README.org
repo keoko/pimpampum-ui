@@ -1,0 +1,4 @@
+* PimPamPum UI
+UI for PimPamPum PIM system built with elm.
+
+This is a pet project to learn how to build client applications with elm.
