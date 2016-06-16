@@ -7,9 +7,13 @@ elm-make Pimpampum.elm
 elm package install elm-lang/html
 ** DONE basic model-view-update structure
 CLOSED: [2016-06-16 Thu 07:41]
-** TODO list items
-** TODO elm-reactor depends on google font apis
+** DONE list items
+CLOSED: [2016-06-16 Thu 08:11]
 ** TODO add items
+** TODO elm-reactor depends on google font apis
+** TODO unit testing
+** TODO console.log
+** TODO how to debug
 ** TODO delete item
 ** TODO update item
 ** TODO connect with REST API
