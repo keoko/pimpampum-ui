@@ -7190,34 +7190,109 @@ var _elm_lang$html$Html_Events$Options = F2(
 	function (a, b) {
 		return {stopPropagation: a, preventDefault: b};
 	});
+var _user$project$Main$newItem = F4(
+	function (uid, sku, name, description) {
+		return {id: uid, sku: sku, name: name, description: description};
+	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				items: A2(
-					_elm_lang$core$List$filter,
-					function (i) {
-						return !_elm_lang$core$Native_Utils.eq(i.id, _p0._0);
-					},
-					model.items)
-			});
+		switch (_p0.ctor) {
+			case 'Delete':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						items: A2(
+							_elm_lang$core$List$filter,
+							function (i) {
+								return !_elm_lang$core$Native_Utils.eq(i.id, _p0._0);
+							},
+							model.items)
+					});
+			case 'Add':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						uid: model.uid + 1,
+						skuField: '',
+						items: A2(
+							_elm_lang$core$Basics_ops['++'],
+							model.items,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A4(_user$project$Main$newItem, model.uid, model.skuField, '', '')
+								]))
+					});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{skuField: _p0._0});
+		}
 	});
 var _user$project$Main$initialModel = {
+	uid: 1,
+	skuField: 'test',
 	items: _elm_lang$core$Native_List.fromArray(
 		[
 			{id: 1, sku: 'sku1', name: 'test1', description: 'description1'},
 			{id: 2, sku: 'sku2', name: 'test1', description: 'description1'}
 		])
 };
-var _user$project$Main$Model = function (a) {
-	return {items: a};
-};
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {items: a, uid: b, skuField: c};
+	});
 var _user$project$Main$Item = F4(
 	function (a, b, c, d) {
 		return {id: a, sku: b, name: c, description: d};
 	});
+var _user$project$Main$Sku = function (a) {
+	return {ctor: 'Sku', _0: a};
+};
+var _user$project$Main$Add = {ctor: 'Add'};
+var _user$project$Main$itemFormView = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text('sku:'),
+				A2(
+				_elm_lang$html$Html$input,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onInput(_user$project$Main$Sku),
+						_elm_lang$html$Html_Attributes$value(model.skuField)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				_elm_lang$html$Html$text('name:'),
+				A2(
+				_elm_lang$html$Html$input,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				_elm_lang$html$Html$text('description:'),
+				A2(
+				_elm_lang$html$Html$input,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$Add)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('add')
+					]))
+			]));
+};
 var _user$project$Main$Delete = function (a) {
 	return {ctor: 'Delete', _0: a};
 };
@@ -7302,7 +7377,8 @@ var _user$project$Main$view = function (model) {
 					[
 						_elm_lang$html$Html$text('pimpampum-ui')
 					])),
-				_user$project$Main$itemListView(model.items)
+				_user$project$Main$itemListView(model.items),
+				_user$project$Main$itemFormView(model)
 			]));
 };
 var _user$project$Main$main = {

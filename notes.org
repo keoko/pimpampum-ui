@@ -17,8 +17,9 @@ CLOSED: [2016-06-16 Thu 17:56]
 ** TODO connect via Phoenix web socket API
 ** TODO elm-reactor depends on google font apis
 ** TODO unit testing
-** TODO console.log
-** TODO how to debug
+** TODO how to debug/console.log
+https://elm-community.github.io/elm-faq/#how-can-i-write-debugging-information-to-the-console
+        _ = Debug.log "my message" model.test
 ** TODO bootstrap
 
 * Nice To Have
