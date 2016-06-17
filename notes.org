@@ -11,10 +11,12 @@ CLOSED: [2016-06-16 Thu 07:41]
 CLOSED: [2016-06-16 Thu 08:11]
 ** DONE delete item
 CLOSED: [2016-06-16 Thu 17:56]
-** TODO add items
+** DONE add items
+CLOSED: [2016-06-17 Fri 08:31]
 ** TODO update items
 ** TODO connect with REST API
 ** TODO connect via Phoenix web socket API
+** TODO check TodoMVC with firebase
 ** TODO elm-reactor depends on google font apis
 ** TODO unit testing
 ** TODO how to debug/console.log

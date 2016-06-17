@@ -7215,37 +7215,55 @@ var _user$project$Main$update = F2(
 					{
 						uid: model.uid + 1,
 						skuField: '',
+						nameField: '',
+						descriptionField: '',
 						items: A2(
 							_elm_lang$core$Basics_ops['++'],
 							model.items,
 							_elm_lang$core$Native_List.fromArray(
 								[
-									A4(_user$project$Main$newItem, model.uid, model.skuField, '', '')
+									A4(_user$project$Main$newItem, model.uid, model.skuField, model.nameField, model.descriptionField)
 								]))
 					});
-			default:
+			case 'Sku':
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{skuField: _p0._0});
+			case 'Name':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{nameField: _p0._0});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{descriptionField: _p0._0});
 		}
 	});
 var _user$project$Main$initialModel = {
 	uid: 1,
-	skuField: 'test',
+	skuField: '',
+	nameField: '',
+	descriptionField: '',
 	items: _elm_lang$core$Native_List.fromArray(
 		[
 			{id: 1, sku: 'sku1', name: 'test1', description: 'description1'},
 			{id: 2, sku: 'sku2', name: 'test1', description: 'description1'}
 		])
 };
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {items: a, uid: b, skuField: c};
+var _user$project$Main$Model = F5(
+	function (a, b, c, d, e) {
+		return {items: a, uid: b, skuField: c, nameField: d, descriptionField: e};
 	});
 var _user$project$Main$Item = F4(
 	function (a, b, c, d) {
 		return {id: a, sku: b, name: c, description: d};
 	});
+var _user$project$Main$Description = function (a) {
+	return {ctor: 'Description', _0: a};
+};
+var _user$project$Main$Name = function (a) {
+	return {ctor: 'Name', _0: a};
+};
 var _user$project$Main$Sku = function (a) {
 	return {ctor: 'Sku', _0: a};
 };
@@ -7271,14 +7289,20 @@ var _user$project$Main$itemFormView = function (model) {
 				A2(
 				_elm_lang$html$Html$input,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
+					[
+						_elm_lang$html$Html_Events$onInput(_user$project$Main$Name),
+						_elm_lang$html$Html_Attributes$value(model.nameField)
+					]),
 				_elm_lang$core$Native_List.fromArray(
 					[])),
 				_elm_lang$html$Html$text('description:'),
 				A2(
 				_elm_lang$html$Html$input,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
+					[
+						_elm_lang$html$Html_Events$onInput(_user$project$Main$Description),
+						_elm_lang$html$Html_Attributes$value(model.descriptionField)
+					]),
 				_elm_lang$core$Native_List.fromArray(
 					[])),
 				A2(

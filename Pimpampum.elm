@@ -7,12 +7,14 @@ import Debug exposing (log)
 main = Html.beginnerProgram { model = initialModel, view = view, update = update }
 
 -- Model
-type Msg = Delete Int | Add | Sku String
+type Msg = Delete Int | Add | Sku String | Name String | Description String
 
 type alias Model =
     { items : List Item
     , uid : Int
     , skuField : String
+    , nameField : String
+    , descriptionField : String
     }
 
 type alias Item =
@@ -24,7 +26,9 @@ type alias Item =
 
 initialModel : Model
 initialModel = { uid = 1
-               , skuField = "test"
+               , skuField = ""
+               , nameField = ""
+               , descriptionField = ""
                , items = [
                       { id = 1
                       , sku = "sku1"
@@ -55,10 +59,22 @@ update msg model =
             { model |
             uid = model.uid + 1
             , skuField = ""
-            , items = model.items ++ [newItem model.uid model.skuField "" ""]
+            , nameField = ""
+            , descriptionField = ""
+            , items = model.items
+                      ++ [ newItem
+                           model.uid
+                           model.skuField
+                           model.nameField
+                           model.descriptionField
+                         ]
             }
         Sku sku ->
             { model | skuField = sku }
+        Name name ->
+            { model | nameField = name }
+        Description description ->
+            { model | descriptionField = description }
 
 -- Views
 itemListView items = ul [id "item-list"] (List.map (itemView) items)
@@ -77,9 +93,9 @@ itemFormView model =
         [text "sku:"
         ,input [onInput Sku, value model.skuField] []
         ,text "name:"
-        ,input [] []
+        ,input [onInput Name, value model.nameField] []
         ,text "description:"
-        ,input [] []
+        ,input [onInput Description, value model.descriptionField] []
         ,button [onClick Add] [text "add"]
         ]
 
