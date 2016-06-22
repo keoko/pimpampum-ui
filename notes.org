@@ -14,7 +14,7 @@ CLOSED: [2016-06-16 Thu 17:56]
 ** DONE add items
 CLOSED: [2016-06-17 Fri 08:31]
 ** TODO update items
-** TODO how to manage flash messages
+** TODO how to manage flash messages (errors, info, etc.)
 ** TODO connect with REST API
 ** TODO connect via Phoenix web socket API
 ** TODO check TodoMVC with firebase
@@ -36,3 +36,7 @@ https://elm-community.github.io/elm-faq/#how-can-i-write-debugging-information-t
 *** run reactor/make
 ** misc
 *** enclose with parenthesis a region
+
+* Documentation
+http://lucasmreis.github.io/blog/learning-elm-part-3/
+https://gist.github.com/yang-wei/0a1cea1194a244aa9be6

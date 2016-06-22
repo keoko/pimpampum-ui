@@ -1,10 +1,24 @@
 import Html exposing (..)
 import Html.App as Html
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (id, value)
 import Html.Events exposing (onClick, onInput)
 import Debug exposing (log)
+import Json.Encode as Json
+import Json.Decode exposing (Decoder, at, decodeString, decodeValue, succeed, int, string, object1, object4, list, (:=))
+import Http
+import Task
 
-main = Html.beginnerProgram { model = initialModel, view = view, update = update }
+
+url = "http://localhost:4000/api/items"
+
+main =
+    Html.program
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
+
 
 -- Model
 type EditMode = AddMode | UpdateMode
@@ -17,6 +31,8 @@ type Msg = Edit Int
          | Sku String
          | Name String
          | Description String
+         | FetchFail Http.Error
+         | FetchSucceed Items
 
 type alias Model =
     { items : List Item
@@ -34,6 +50,8 @@ type alias Item =
     , name : String
     , description : String
     }
+
+type alias Items = List Item
 
 initialModel : Model
 initialModel = { uid = 1
@@ -56,6 +74,13 @@ initialModel = { uid = 1
                      ]
                }
 
+init : (Model, Cmd Msg)
+init =
+    (initialModel
+    , getItems
+    )
+
+
 newItem uid sku name description =
     { id = uid
     , sku = sku
@@ -67,22 +92,22 @@ newItem uid sku name description =
 update msg model =
     case msg of
         Delete id ->
-            { model | items = List.filter (\i -> i.id /= id) model.items }
+            ({ model | items = List.filter (\i -> i.id /= id) model.items }, Cmd.none)
         Edit id ->
             let
                 items = List.filter (\i -> i.id == id) model.items
             in
                 case List.head(items) of
-                    Just item -> { model |
+                    Just item -> ({ model |
                                    editMode = UpdateMode
                                  , idField = item.id
                                  , skuField = item.sku
                                  , nameField = item.name
                                  , descriptionField = item.description
-                                 }
-                    Nothing -> model
+                                 }, Cmd.none)
+                    Nothing -> (model, Cmd.none)
         Add ->
-            { model |
+            ({ model |
             uid = model.uid + 1
             , idField = 0
             , skuField = ""
@@ -95,7 +120,7 @@ update msg model =
                            model.nameField
                            model.descriptionField
                          ]
-            }
+            }, Cmd.none)
         Update id ->
             let
                 updateItem i =
@@ -108,21 +133,26 @@ update msg model =
                     else
                         i
             in
-                { model | items = List.map updateItem model.items }
+                ({ model | items = List.map updateItem model.items }, Cmd.none)
         Sku sku ->
-            { model | skuField = sku }
+            ({ model | skuField = sku }, Cmd.none)
         Name name ->
-            { model | nameField = name }
+            ({ model | nameField = name }, Cmd.none)
         Description description ->
-            { model | descriptionField = description }
+            ({ model | descriptionField = description }, Cmd.none)
         Reset ->
-            { model |
+            ({ model |
               editMode = AddMode
             , idField = 0
             , skuField = ""
             , nameField = ""
             , descriptionField = ""
-            }
+            }, Cmd.none)
+        FetchFail _ ->
+            -- todo: log the error in console
+            (model, Cmd.none)
+        FetchSucceed items ->
+            ({ model | items = items }, Cmd.none)
 
 -- Views
 itemListView items = ul [id "item-list"] (List.map (itemView) items)
@@ -163,3 +193,30 @@ view model =
         , itemListView model.items
         , itemFormView model
         ]
+
+
+-- SUBSCRIPTIONS
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
+
+
+-- HTTP
+itemDecoder : Decoder Item
+itemDecoder =
+    object4 Item
+        ( "id" := int )
+        ( "sku" := string )
+        ( "name" := string )
+        ( "description" := string )
+
+itemsDecoder =
+    at ["data"] (list itemDecoder)
+
+-- jsonString = "{\"items\": [{\"name\": \"this is a test111\", \"description\": \"desc\"},{\"name\": \"this is a test222\", \"description\": \"desc2\"}]}"
+jsonString = "[{\"name\": \"this is a test111\", \"description\": \"desc\"},{\"name\": \"this is a test222\", \"description\": \"desc2\"}]"
+
+getItems : Cmd Msg
+getItems =
+    Task.perform FetchFail FetchSucceed (Http.get itemsDecoder url)
