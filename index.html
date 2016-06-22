@@ -7992,6 +7992,21 @@ var _evancz$elm_http$Http$post = F3(
 			decoder,
 			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 	});
+var _user$project$Main$settings = _evancz$elm_http$Http$defaultSettings;
+var _user$project$Main$request = function (id) {
+	return {
+		verb: 'DELETE',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'http://localhost:4000/api/items/',
+			_elm_lang$core$Basics$toString(id)),
+		body: _evancz$elm_http$Http$string('')
+	};
+};
 var _user$project$Main$jsonString = '[{\"name\": \"this is a test111\", \"description\": \"desc\"},{\"name\": \"this is a test222\", \"description\": \"desc2\"}]';
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
@@ -8021,6 +8036,10 @@ var _user$project$Main$itemsDecoder = A2(
 	_elm_lang$core$Native_List.fromArray(
 		['data']),
 	_elm_lang$core$Json_Decode$list(_user$project$Main$itemDecoder));
+var _user$project$Main$Res1 = F5(
+	function (a, b, c, d, e) {
+		return {headers: a, status: b, statusText: c, url: d, value: e};
+	});
 var _user$project$Main$UpdateMode = {ctor: 'UpdateMode'};
 var _user$project$Main$AddMode = {ctor: 'AddMode'};
 var _user$project$Main$initialModel = {
@@ -8036,11 +8055,28 @@ var _user$project$Main$initialModel = {
 			{id: 2, sku: 'sku2', name: 'test1', description: 'description1'}
 		])
 };
+var _user$project$Main$DeleteItemSucceed = function (a) {
+	return {ctor: 'DeleteItemSucceed', _0: a};
+};
+var _user$project$Main$DeleteItemFail = function (a) {
+	return {ctor: 'DeleteItemFail', _0: a};
+};
+var _user$project$Main$deleteItem = function (id) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_user$project$Main$DeleteItemFail,
+		_user$project$Main$DeleteItemSucceed,
+		A2(
+			_evancz$elm_http$Http$send,
+			_user$project$Main$settings,
+			_user$project$Main$request(id)));
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
 			case 'Delete':
+				var _p1 = _p0._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -8049,11 +8085,11 @@ var _user$project$Main$update = F2(
 							items: A2(
 								_elm_lang$core$List$filter,
 								function (i) {
-									return !_elm_lang$core$Native_Utils.eq(i.id, _p0._0);
+									return !_elm_lang$core$Native_Utils.eq(i.id, _p1);
 								},
 								model.items)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _user$project$Main$deleteItem(_p1)
 				};
 			case 'Edit':
 				var items = A2(
@@ -8062,14 +8098,14 @@ var _user$project$Main$update = F2(
 						return _elm_lang$core$Native_Utils.eq(i.id, _p0._0);
 					},
 					model.items);
-				var _p1 = _elm_lang$core$List$head(items);
-				if (_p1.ctor === 'Just') {
-					var _p2 = _p1._0;
+				var _p2 = _elm_lang$core$List$head(items);
+				if (_p2.ctor === 'Just') {
+					var _p3 = _p2._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{editMode: _user$project$Main$UpdateMode, idField: _p2.id, skuField: _p2.sku, nameField: _p2.name, descriptionField: _p2.description}),
+							{editMode: _user$project$Main$UpdateMode, idField: _p3.id, skuField: _p3.sku, nameField: _p3.name, descriptionField: _p3.description}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -8145,7 +8181,7 @@ var _user$project$Main$update = F2(
 				};
 			case 'FetchFail':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			default:
+			case 'FetchSucceed':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -8153,6 +8189,10 @@ var _user$project$Main$update = F2(
 						{items: _p0._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'DeleteItemFail':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 var _user$project$Main$FetchSucceed = function (a) {
@@ -8192,8 +8232,8 @@ var _user$project$Main$Update = function (a) {
 	return {ctor: 'Update', _0: a};
 };
 var _user$project$Main$editButton = function (model) {
-	var _p3 = model.editMode;
-	if (_p3.ctor === 'AddMode') {
+	var _p4 = model.editMode;
+	if (_p4.ctor === 'AddMode') {
 		return A2(
 			_elm_lang$html$Html$button,
 			_elm_lang$core$Native_List.fromArray(

@@ -7,7 +7,7 @@ import Json.Encode as Json
 import Json.Decode exposing (Decoder, at, decodeString, decodeValue, succeed, int, string, object1, object4, list, (:=))
 import Http
 import Task
-
+import Dict
 
 url = "http://localhost:4000/api/items"
 
@@ -33,6 +33,8 @@ type Msg = Edit Int
          | Description String
          | FetchFail Http.Error
          | FetchSucceed Items
+         | DeleteItemFail Http.RawError
+         | DeleteItemSucceed Res1
 
 type alias Model =
     { items : List Item
@@ -52,6 +54,15 @@ type alias Item =
     }
 
 type alias Items = List Item
+
+
+type alias Res1 =
+    { headers : Dict.Dict String String
+    , status : Int
+    , statusText : String
+    , url : String
+    , value : Http.Value
+    }
 
 initialModel : Model
 initialModel = { uid = 1
@@ -92,7 +103,7 @@ newItem uid sku name description =
 update msg model =
     case msg of
         Delete id ->
-            ({ model | items = List.filter (\i -> i.id /= id) model.items }, Cmd.none)
+            ({ model | items = List.filter (\i -> i.id /= id) model.items }, (deleteItem id))
         Edit id ->
             let
                 items = List.filter (\i -> i.id == id) model.items
@@ -153,6 +164,10 @@ update msg model =
             (model, Cmd.none)
         FetchSucceed items ->
             ({ model | items = items }, Cmd.none)
+        DeleteItemFail _ ->
+            (model, Cmd.none)
+        DeleteItemSucceed _ ->
+            (model, Cmd.none)
 
 -- Views
 itemListView items = ul [id "item-list"] (List.map (itemView) items)
@@ -220,3 +235,27 @@ jsonString = "[{\"name\": \"this is a test111\", \"description\": \"desc\"},{\"n
 getItems : Cmd Msg
 getItems =
     Task.perform FetchFail FetchSucceed (Http.get itemsDecoder url)
+
+
+request : Int -> Http.Request
+request id =
+  { verb = "DELETE"
+  , headers =
+    [ --("Origin", "http://lukewestby.com")
+--    , ("Access-Control-Request-Method", "PATCH")
+     ("Content-Type", "application/json")
+    ]
+  , url = ("http://localhost:4000/api/items/" ++ (toString id))
+  , body = Http.string ""
+--  , body = Http.string (encodeItemUpdate itemUpdate)
+  }
+
+settings : Http.Settings
+settings = Http.defaultSettings
+ --  { Http.defaultSettings
+ --  | timeout = 5 * Time.second
+ -- -- , withCredentials = True
+ --  }
+
+deleteItem id =
+  Task.perform DeleteItemFail DeleteItemSucceed (Http.send settings (request id))

@@ -13,12 +13,18 @@ CLOSED: [2016-06-16 Thu 08:11]
 CLOSED: [2016-06-16 Thu 17:56]
 ** DONE add items
 CLOSED: [2016-06-17 Fri 08:31]
-** TODO update items
-** TODO how to manage flash messages (errors, info, etc.)
-** TODO connect with REST API
+** DONE update items
+CLOSED: [2016-06-22 Wed 08:31]
+** DONE connect with REST API
+CLOSED: [2016-06-22 Wed 08:30]
+** DONE delete via REST API
+CLOSED: [2016-06-22 Wed 21:03]
+** TODO update via REST API
+** TODO insert via REST API
 ** TODO connect via Phoenix web socket API
 ** TODO check TodoMVC with firebase
-** TODO elm-reactor depends on google font apis
+** TODO how to manage flash messages (errors, info, etc.)
+** TODO howto modularize the app
 ** TODO unit testing
 ** TODO how to debug/console.log
 https://elm-community.github.io/elm-faq/#how-can-i-write-debugging-information-to-the-console
@@ -28,6 +34,7 @@ https://elm-community.github.io/elm-faq/#how-can-i-write-debugging-information-t
 * Nice To Have
 ** TODO Auth
 ** TODO Sort by column
+** TODO elm-reactor depends on google font apis
 ** TODO Max number of items per page
 
 * Spacemacs
@@ -40,3 +47,4 @@ https://elm-community.github.io/elm-faq/#how-can-i-write-debugging-information-t
 * Documentation
 http://lucasmreis.github.io/blog/learning-elm-part-3/
 https://gist.github.com/yang-wei/0a1cea1194a244aa9be6
+http://guide.elm-lang.org/architecture/effects/http.html
