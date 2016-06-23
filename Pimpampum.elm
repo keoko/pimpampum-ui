@@ -37,6 +37,8 @@ type Msg = Edit Int
          | DeleteItemSucceed Res1
          | AddItemFail Http.RawError
          | AddItemSucceed Res1
+         | UpdateItemFail Http.RawError
+         | UpdateItemSucceed Res1
 
 type alias Model =
     { items : List Item
@@ -135,7 +137,11 @@ update msg model =
             }, (addItem item'))
         Update id ->
             let
-                updateItem i =
+                -- todo use item' in updateItem local function
+                item' =
+                    Item id model.skuField model.nameField model.descriptionField
+
+                update i =
                     if i.id == id then
                         { i |
                           sku = model.skuField
@@ -145,7 +151,7 @@ update msg model =
                     else
                         i
             in
-                ({ model | items = List.map updateItem model.items }, Cmd.none)
+                ({ model | items = List.map update model.items }, (updateItem item'))
         Sku sku ->
             ({ model | skuField = sku }, Cmd.none)
         Name name ->
@@ -172,6 +178,10 @@ update msg model =
         AddItemFail _ ->
             (model, Cmd.none)
         AddItemSucceed _ ->
+            (model, Cmd.none)
+        UpdateItemFail _ ->
+            (model, Cmd.none)
+        UpdateItemSucceed _ ->
             (model, Cmd.none)
 
 -- Views
@@ -277,3 +287,25 @@ addItem item =
         sendRequest = Http.send Http.defaultSettings request
     in
         Task.perform AddItemFail AddItemSucceed sendRequest
+
+
+updateItem item =
+    let
+        url = host ++ "/api/items/" ++ (toString item.id)
+
+        encodedItem = Json.object [ ("id", Json.int item.id)
+                             , ("sku", Json.string item.sku)
+                             , ("name", Json.string item.name)
+                             , ("description", Json.string item.description)]
+                      |> (\x -> Json.object [("item", x)])
+                      |> Json.encode 0
+
+        request = { verb = "PUT"
+                  , headers = [("Content-Type", "application/json")]
+                  , url = url
+                  , body = Http.string encodedItem
+                  }
+
+        sendRequest = Http.send Http.defaultSettings request
+    in
+        Task.perform UpdateItemFail UpdateItemSucceed sendRequest

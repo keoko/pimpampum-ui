@@ -8039,6 +8039,66 @@ var _user$project$Main$initialModel = {
 			{id: 2, sku: 'sku2', name: 'test1', description: 'description1'}
 		])
 };
+var _user$project$Main$UpdateItemSucceed = function (a) {
+	return {ctor: 'UpdateItemSucceed', _0: a};
+};
+var _user$project$Main$UpdateItemFail = function (a) {
+	return {ctor: 'UpdateItemFail', _0: a};
+};
+var _user$project$Main$updateItem = function (item) {
+	var encodedItem = A2(
+		_elm_lang$core$Json_Encode$encode,
+		0,
+		function (x) {
+			return _elm_lang$core$Json_Encode$object(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						{ctor: '_Tuple2', _0: 'item', _1: x}
+					]));
+		}(
+			_elm_lang$core$Json_Encode$object(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						{
+						ctor: '_Tuple2',
+						_0: 'id',
+						_1: _elm_lang$core$Json_Encode$int(item.id)
+					},
+						{
+						ctor: '_Tuple2',
+						_0: 'sku',
+						_1: _elm_lang$core$Json_Encode$string(item.sku)
+					},
+						{
+						ctor: '_Tuple2',
+						_0: 'name',
+						_1: _elm_lang$core$Json_Encode$string(item.name)
+					},
+						{
+						ctor: '_Tuple2',
+						_0: 'description',
+						_1: _elm_lang$core$Json_Encode$string(item.description)
+					}
+					]))));
+	var url = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_user$project$Main$host,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/api/items/',
+			_elm_lang$core$Basics$toString(item.id)));
+	var request = {
+		verb: 'PUT',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: url,
+		body: _evancz$elm_http$Http$string(encodedItem)
+	};
+	var sendRequest = A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request);
+	return A3(_elm_lang$core$Task$perform, _user$project$Main$UpdateItemFail, _user$project$Main$UpdateItemSucceed, sendRequest);
+};
 var _user$project$Main$AddItemSucceed = function (a) {
 	return {ctor: 'AddItemSucceed', _0: a};
 };
@@ -8176,19 +8236,21 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Main$addItem(item$)
 				};
 			case 'Update':
-				var updateItem = function (i) {
-					return _elm_lang$core$Native_Utils.eq(i.id, _p0._0) ? _elm_lang$core$Native_Utils.update(
+				var _p4 = _p0._0;
+				var update = function (i) {
+					return _elm_lang$core$Native_Utils.eq(i.id, _p4) ? _elm_lang$core$Native_Utils.update(
 						i,
 						{sku: model.skuField, name: model.nameField, description: model.descriptionField}) : i;
 				};
+				var item$ = A4(_user$project$Main$Item, _p4, model.skuField, model.nameField, model.descriptionField);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							items: A2(_elm_lang$core$List$map, updateItem, model.items)
+							items: A2(_elm_lang$core$List$map, update, model.items)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _user$project$Main$updateItem(item$)
 				};
 			case 'Sku':
 				return {
@@ -8238,6 +8300,10 @@ var _user$project$Main$update = F2(
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'AddItemFail':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'AddItemSucceed':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'UpdateItemFail':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
@@ -8282,8 +8348,8 @@ var _user$project$Main$Update = function (a) {
 	return {ctor: 'Update', _0: a};
 };
 var _user$project$Main$editButton = function (model) {
-	var _p4 = model.editMode;
-	if (_p4.ctor === 'AddMode') {
+	var _p5 = model.editMode;
+	if (_p5.ctor === 'AddMode') {
 		return A2(
 			_elm_lang$html$Html$button,
 			_elm_lang$core$Native_List.fromArray(
