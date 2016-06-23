@@ -2,15 +2,17 @@ import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (id, value)
 import Html.Events exposing (onClick, onInput)
-import Debug exposing (log)
+-- import Debug exposing (log)
 import Json.Encode as Json
 import Json.Decode exposing (Decoder, at, decodeString, decodeValue, succeed, int, string, object1, object4, list, (:=))
 import Http
 import Task
 import Dict
 
+host : String
 host = "http://localhost:4000"
 
+main : Program Never
 main =
     Html.program
         { init = init
@@ -97,6 +99,7 @@ init =
     )
 
 
+newItem : Int -> String -> String -> String -> Item
 newItem uid sku name description =
     { id = uid
     , sku = sku
@@ -105,6 +108,7 @@ newItem uid sku name description =
     }
 
 -- Update
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Delete id ->
@@ -185,8 +189,10 @@ update msg model =
             (model, Cmd.none)
 
 -- Views
+itemListView : Items -> Html Msg
 itemListView items = ul [id "item-list"] (List.map (itemView) items)
 
+itemView : Item -> Html Msg
 itemView item =
     li []
         [div [] [text "id:", text (toString item.id)]
@@ -197,6 +203,7 @@ itemView item =
         ,button [onClick (Edit item.id)] [text "edit"]
         ]
 
+itemFormView : Model -> Html Msg
 itemFormView model =
     div []
         [ text "sku:"
@@ -209,14 +216,17 @@ itemFormView model =
         , resetButton
         ]
 
+editButton : Model -> Html Msg
 editButton model =
     case model.editMode of
         AddMode -> button [onClick Add] [text "add"]
         UpdateMode -> button [onClick (Update model.idField)] [text "update"]
 
+resetButton : Html Msg
 resetButton =
     button [onClick Reset] [text "reset"]
 
+view : Model -> Html Msg
 view model =
     div []
         [h1 [] [text "pimpampum-ui"]
@@ -233,6 +243,7 @@ subscriptions model =
 
 
 -- HTTP
+
 itemDecoder : Decoder Item
 itemDecoder =
     object4 Item
@@ -241,6 +252,7 @@ itemDecoder =
         ( "name" := string )
         ( "description" := string )
 
+itemsDecoder : Decoder Items
 itemsDecoder =
     at ["data"] (list itemDecoder)
 
@@ -252,6 +264,7 @@ getItems =
     in
         Task.perform FetchFail FetchSucceed (Http.get itemsDecoder url)
 
+deleteItem : Int -> Cmd Msg
 deleteItem id =
     let
         url = host ++ "/api/items/" ++ (toString id)
@@ -267,6 +280,7 @@ deleteItem id =
         Task.perform DeleteItemFail DeleteItemSucceed sendRequest
 
 
+addItem : Item -> Cmd Msg
 addItem item =
     let
         url = host ++ "/api/items/"
@@ -289,6 +303,7 @@ addItem item =
         Task.perform AddItemFail AddItemSucceed sendRequest
 
 
+updateItem : Item -> Cmd Msg
 updateItem item =
     let
         url = host ++ "/api/items/" ++ (toString item.id)
