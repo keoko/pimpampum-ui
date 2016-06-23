@@ -7992,22 +7992,6 @@ var _evancz$elm_http$Http$post = F3(
 			decoder,
 			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 	});
-var _user$project$Main$settings = _evancz$elm_http$Http$defaultSettings;
-var _user$project$Main$request = function (id) {
-	return {
-		verb: 'DELETE',
-		headers: _elm_lang$core$Native_List.fromArray(
-			[
-				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
-			]),
-		url: A2(
-			_elm_lang$core$Basics_ops['++'],
-			'http://localhost:4000/api/items/',
-			_elm_lang$core$Basics$toString(id)),
-		body: _evancz$elm_http$Http$string('')
-	};
-};
-var _user$project$Main$jsonString = '[{\"name\": \"this is a test111\", \"description\": \"desc\"},{\"name\": \"this is a test222\", \"description\": \"desc2\"}]';
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -8015,7 +7999,7 @@ var _user$project$Main$newItem = F4(
 	function (uid, sku, name, description) {
 		return {id: uid, sku: sku, name: name, description: description};
 	});
-var _user$project$Main$url = 'http://localhost:4000/api/items';
+var _user$project$Main$host = 'http://localhost:4000';
 var _user$project$Main$Model = F7(
 	function (a, b, c, d, e, f, g) {
 		return {items: a, uid: b, idField: c, skuField: d, nameField: e, descriptionField: f, editMode: g};
@@ -8055,6 +8039,60 @@ var _user$project$Main$initialModel = {
 			{id: 2, sku: 'sku2', name: 'test1', description: 'description1'}
 		])
 };
+var _user$project$Main$AddItemSucceed = function (a) {
+	return {ctor: 'AddItemSucceed', _0: a};
+};
+var _user$project$Main$AddItemFail = function (a) {
+	return {ctor: 'AddItemFail', _0: a};
+};
+var _user$project$Main$addItem = function (item) {
+	var encodedItem = A2(
+		_elm_lang$core$Json_Encode$encode,
+		0,
+		function (x) {
+			return _elm_lang$core$Json_Encode$object(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						{ctor: '_Tuple2', _0: 'item', _1: x}
+					]));
+		}(
+			_elm_lang$core$Json_Encode$object(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						{
+						ctor: '_Tuple2',
+						_0: 'id',
+						_1: _elm_lang$core$Json_Encode$int(item.id)
+					},
+						{
+						ctor: '_Tuple2',
+						_0: 'sku',
+						_1: _elm_lang$core$Json_Encode$string(item.sku)
+					},
+						{
+						ctor: '_Tuple2',
+						_0: 'name',
+						_1: _elm_lang$core$Json_Encode$string(item.name)
+					},
+						{
+						ctor: '_Tuple2',
+						_0: 'description',
+						_1: _elm_lang$core$Json_Encode$string(item.description)
+					}
+					]))));
+	var url = A2(_elm_lang$core$Basics_ops['++'], _user$project$Main$host, '/api/items/');
+	var request = {
+		verb: 'POST',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: url,
+		body: _evancz$elm_http$Http$string(encodedItem)
+	};
+	var sendRequest = A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request);
+	return A3(_elm_lang$core$Task$perform, _user$project$Main$AddItemFail, _user$project$Main$AddItemSucceed, sendRequest);
+};
 var _user$project$Main$DeleteItemSucceed = function (a) {
 	return {ctor: 'DeleteItemSucceed', _0: a};
 };
@@ -8062,14 +8100,24 @@ var _user$project$Main$DeleteItemFail = function (a) {
 	return {ctor: 'DeleteItemFail', _0: a};
 };
 var _user$project$Main$deleteItem = function (id) {
-	return A3(
-		_elm_lang$core$Task$perform,
-		_user$project$Main$DeleteItemFail,
-		_user$project$Main$DeleteItemSucceed,
+	var url = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_user$project$Main$host,
 		A2(
-			_evancz$elm_http$Http$send,
-			_user$project$Main$settings,
-			_user$project$Main$request(id)));
+			_elm_lang$core$Basics_ops['++'],
+			'/api/items/',
+			_elm_lang$core$Basics$toString(id)));
+	var request = {
+		verb: 'DELETE',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: url,
+		body: _evancz$elm_http$Http$string('')
+	};
+	var sendRequest = A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request);
+	return A3(_elm_lang$core$Task$perform, _user$project$Main$DeleteItemFail, _user$project$Main$DeleteItemSucceed, sendRequest);
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
@@ -8112,6 +8160,7 @@ var _user$project$Main$update = F2(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'Add':
+				var item$ = A4(_user$project$Main$newItem, model.uid, model.skuField, model.nameField, model.descriptionField);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -8122,15 +8171,9 @@ var _user$project$Main$update = F2(
 							skuField: '',
 							nameField: '',
 							descriptionField: '',
-							items: A2(
-								_elm_lang$core$Basics_ops['++'],
-								model.items,
-								_elm_lang$core$Native_List.fromArray(
-									[
-										A4(_user$project$Main$newItem, model.uid, model.skuField, model.nameField, model.descriptionField)
-									]))
+							items: A2(_elm_lang$core$List_ops['::'], item$, model.items)
 						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_1: _user$project$Main$addItem(item$)
 				};
 			case 'Update':
 				var updateItem = function (i) {
@@ -8191,6 +8234,10 @@ var _user$project$Main$update = F2(
 				};
 			case 'DeleteItemFail':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'DeleteItemSucceed':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'AddItemFail':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
@@ -8201,11 +8248,14 @@ var _user$project$Main$FetchSucceed = function (a) {
 var _user$project$Main$FetchFail = function (a) {
 	return {ctor: 'FetchFail', _0: a};
 };
-var _user$project$Main$getItems = A3(
-	_elm_lang$core$Task$perform,
-	_user$project$Main$FetchFail,
-	_user$project$Main$FetchSucceed,
-	A2(_evancz$elm_http$Http$get, _user$project$Main$itemsDecoder, _user$project$Main$url));
+var _user$project$Main$getItems = function () {
+	var url = A2(_elm_lang$core$Basics_ops['++'], _user$project$Main$host, '/api/items');
+	return A3(
+		_elm_lang$core$Task$perform,
+		_user$project$Main$FetchFail,
+		_user$project$Main$FetchSucceed,
+		A2(_evancz$elm_http$Http$get, _user$project$Main$itemsDecoder, url));
+}();
 var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initialModel, _1: _user$project$Main$getItems};
 var _user$project$Main$Description = function (a) {
 	return {ctor: 'Description', _0: a};

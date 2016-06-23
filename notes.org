@@ -20,16 +20,20 @@ CLOSED: [2016-06-22 Wed 08:30]
 ** DONE delete via REST API
 CLOSED: [2016-06-22 Wed 21:03]
 ** TODO update via REST API
-** TODO insert via REST API
+** DONE insert via REST API
+CLOSED: [2016-06-22 Wed 22:13]
 ** TODO connect via Phoenix web socket API
 ** TODO check TodoMVC with firebase
 ** TODO how to manage flash messages (errors, info, etc.)
 ** TODO howto modularize the app
 ** TODO unit testing
+** TODO pessimistic update actions
 ** TODO how to debug/console.log
 https://elm-community.github.io/elm-faq/#how-can-i-write-debugging-information-to-the-console
         _ = Debug.log "my message" model.test
 ** TODO bootstrap
+** TODO for each Http connection we need to create new Msg. better create generic types?
+** TODO is there an easy way to json encode automatically a record?
 
 * Nice To Have
 ** TODO Auth
