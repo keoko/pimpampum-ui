@@ -19,15 +19,16 @@ CLOSED: [2016-06-22 Wed 08:31]
 CLOSED: [2016-06-22 Wed 08:30]
 ** DONE delete via REST API
 CLOSED: [2016-06-22 Wed 21:03]
-** TODO update via REST API
+** DONE update via REST API
+CLOSED: [2016-06-23 Thu 08:05]
 ** DONE insert via REST API
 CLOSED: [2016-06-22 Wed 22:13]
 ** TODO connect via Phoenix web socket API
 ** TODO check TodoMVC with firebase
 ** TODO how to manage flash messages (errors, info, etc.)
-** TODO howto modularize the app
+** TODO howto modularize the app, directory structure
 ** TODO unit testing
-** TODO pessimistic update actions
+** TODO pessimistic vs optimistic update actions
 ** TODO how to debug/console.log
 https://elm-community.github.io/elm-faq/#how-can-i-write-debugging-information-to-the-console
         _ = Debug.log "my message" model.test

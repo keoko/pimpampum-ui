@@ -8,9 +8,16 @@ import Json.Decode exposing (Decoder, at, decodeString, decodeValue, succeed, in
 import Http
 import Task
 import Dict
+import Phoenix.Socket
+import Phoenix.Channel
+import Phoenix.Push
 
 host : String
 host = "http://localhost:4000"
+
+socketServer : String
+socketServer =
+    "ws://localhost:4000/socket/websocket"
 
 main : Program Never
 main =
@@ -41,6 +48,9 @@ type Msg = Edit Int
          | AddItemSucceed Res1
          | UpdateItemFail Http.RawError
          | UpdateItemSucceed Res1
+         | PhoenixMsg (Phoenix.Socket.Msg Msg)
+         | ReceiveChatMessage Json.Value
+         | JoinChannel
 
 type alias Model =
     { items : List Item
@@ -50,6 +60,7 @@ type alias Model =
     , nameField : String
     , descriptionField : String
     , editMode : EditMode
+    , phxSocket : Phoenix.Socket.Socket Msg
     }
 
 type alias Item =
@@ -78,6 +89,7 @@ initialModel = { uid = 1
                , nameField = ""
                , descriptionField = ""
                , editMode = AddMode
+               , phxSocket = initPhxSocket
                , items = [
                       { id = 1
                       , sku = "sku1"
@@ -111,6 +123,31 @@ newItem uid sku name description =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
+        JoinChannel ->
+            let
+                channel = Phoenix.Channel.init "room:lobby"
+                ( phxSocket, phxCmd ) = Phoenix.Socket.join channel model.phxSocket
+            in
+                ( { model | phxSocket = phxSocket }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+        PhoenixMsg msg ->
+            let
+                ( phxSocket, phxCmd ) =
+                    Phoenix.Socket.update msg model.phxSocket
+            in
+                ( { model | phxSocket = phxSocket }
+                , Cmd.map PhoenixMsg phxCmd
+                )
+
+        ReceiveChatMessage raw -> (model, Cmd.none)
+            --case decodeValue chatMessageDecoder raw of
+                --Ok chatMessage ->
+                    --( { model | messages = chatMessage :: model.messages }
+                    --, Cmd.none
+                    --)
+
         Delete id ->
             ({ model | items = List.filter (\i -> i.id /= id) model.items }, (deleteItem id))
         Edit id ->
@@ -230,6 +267,7 @@ view : Model -> Html Msg
 view model =
     div []
         [h1 [] [text "pimpampum-ui"]
+        , button [ onClick JoinChannel ] [ text "Join lobby" ]
         , itemListView model.items
         , itemFormView model
         ]
@@ -239,7 +277,7 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+    Phoenix.Socket.listen model.phxSocket PhoenixMsg
 
 
 -- HTTP
@@ -324,3 +362,10 @@ updateItem item =
         sendRequest = Http.send Http.defaultSettings request
     in
         Task.perform UpdateItemFail UpdateItemSucceed sendRequest
+
+
+initPhxSocket : Phoenix.Socket.Socket Msg
+initPhxSocket =
+    Phoenix.Socket.init socketServer
+        |> Phoenix.Socket.withDebug
+        |> Phoenix.Socket.on "new:msg" "room:lobby" ReceiveChatMessage
