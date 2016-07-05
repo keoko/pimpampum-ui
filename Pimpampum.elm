@@ -30,6 +30,10 @@ main =
 
 
 -- Model
+type alias ItemId = {
+        id : String
+    }
+
 type EditMode = AddMode | UpdateMode
 
 type Msg = Edit Int
@@ -50,6 +54,7 @@ type Msg = Edit Int
          | UpdateItemSucceed Res1
          | PhoenixMsg (Phoenix.Socket.Msg Msg)
          | ReceiveChatMessage Json.Value
+         | DeleteItemMessage Json.Value
          | JoinChannel
 
 type alias Model =
@@ -147,6 +152,11 @@ update msg model =
                     --( { model | messages = chatMessage :: model.messages }
                     --, Cmd.none
                     --)
+        DeleteItemMessage raw ->
+            case decodeValue deleteItemMessageDecoder raw of
+                Ok {id} ->
+                    ({ model | items = List.filter (\i -> (toString i.id) /= id) model.items }, Cmd.none)
+                _ -> ({ model | skuField = "this is a test"} , Cmd.none )
 
         Delete id ->
             ({ model | items = List.filter (\i -> i.id /= id) model.items }, (deleteItem id))
@@ -369,3 +379,9 @@ initPhxSocket =
     Phoenix.Socket.init socketServer
         |> Phoenix.Socket.withDebug
         |> Phoenix.Socket.on "new:msg" "room:lobby" ReceiveChatMessage
+        |> Phoenix.Socket.on "item:delete" "room:lobby" DeleteItemMessage
+
+
+deleteItemMessageDecoder : Decoder ItemId
+deleteItemMessageDecoder =
+    object1 ItemId ("id" := string)

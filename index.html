@@ -9517,6 +9517,13 @@ var _user$project$Main$newItem = F4(
 	});
 var _user$project$Main$socketServer = 'ws://localhost:4000/socket/websocket';
 var _user$project$Main$host = 'http://localhost:4000';
+var _user$project$Main$ItemId = function (a) {
+	return {id: a};
+};
+var _user$project$Main$deleteItemMessageDecoder = A2(
+	_elm_lang$core$Json_Decode$object1,
+	_user$project$Main$ItemId,
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string));
 var _user$project$Main$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {items: a, uid: b, idField: c, skuField: d, nameField: e, descriptionField: f, editMode: g, phxSocket: h};
@@ -9544,16 +9551,24 @@ var _user$project$Main$Res1 = F5(
 var _user$project$Main$UpdateMode = {ctor: 'UpdateMode'};
 var _user$project$Main$AddMode = {ctor: 'AddMode'};
 var _user$project$Main$JoinChannel = {ctor: 'JoinChannel'};
+var _user$project$Main$DeleteItemMessage = function (a) {
+	return {ctor: 'DeleteItemMessage', _0: a};
+};
 var _user$project$Main$ReceiveChatMessage = function (a) {
 	return {ctor: 'ReceiveChatMessage', _0: a};
 };
 var _user$project$Main$initPhxSocket = A4(
 	_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
-	'new:msg',
+	'item:delete',
 	'room:lobby',
-	_user$project$Main$ReceiveChatMessage,
-	_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
-		_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(_user$project$Main$socketServer)));
+	_user$project$Main$DeleteItemMessage,
+	A4(
+		_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
+		'new:msg',
+		'room:lobby',
+		_user$project$Main$ReceiveChatMessage,
+		_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
+			_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(_user$project$Main$socketServer))));
 var _user$project$Main$initialModel = {
 	uid: 1,
 	idField: 0,
@@ -9743,8 +9758,36 @@ var _user$project$Main$update = F2(
 				};
 			case 'ReceiveChatMessage':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'DeleteItemMessage':
+				var _p3 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Main$deleteItemMessageDecoder, _p0._0);
+				if (_p3.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								items: A2(
+									_elm_lang$core$List$filter,
+									function (i) {
+										return !_elm_lang$core$Native_Utils.eq(
+											_elm_lang$core$Basics$toString(i.id),
+											_p3._0.id);
+									},
+									model.items)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{skuField: 'this is a test'}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
 			case 'Delete':
-				var _p3 = _p0._0;
+				var _p4 = _p0._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -9753,11 +9796,11 @@ var _user$project$Main$update = F2(
 							items: A2(
 								_elm_lang$core$List$filter,
 								function (i) {
-									return !_elm_lang$core$Native_Utils.eq(i.id, _p3);
+									return !_elm_lang$core$Native_Utils.eq(i.id, _p4);
 								},
 								model.items)
 						}),
-					_1: _user$project$Main$deleteItem(_p3)
+					_1: _user$project$Main$deleteItem(_p4)
 				};
 			case 'Edit':
 				var items = A2(
@@ -9766,14 +9809,14 @@ var _user$project$Main$update = F2(
 						return _elm_lang$core$Native_Utils.eq(i.id, _p0._0);
 					},
 					model.items);
-				var _p4 = _elm_lang$core$List$head(items);
-				if (_p4.ctor === 'Just') {
-					var _p5 = _p4._0;
+				var _p5 = _elm_lang$core$List$head(items);
+				if (_p5.ctor === 'Just') {
+					var _p6 = _p5._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{editMode: _user$project$Main$UpdateMode, idField: _p5.id, skuField: _p5.sku, nameField: _p5.name, descriptionField: _p5.description}),
+							{editMode: _user$project$Main$UpdateMode, idField: _p6.id, skuField: _p6.sku, nameField: _p6.name, descriptionField: _p6.description}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
@@ -9796,13 +9839,13 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Main$addItem(item$)
 				};
 			case 'Update':
-				var _p6 = _p0._0;
+				var _p7 = _p0._0;
 				var update = function (i) {
-					return _elm_lang$core$Native_Utils.eq(i.id, _p6) ? _elm_lang$core$Native_Utils.update(
+					return _elm_lang$core$Native_Utils.eq(i.id, _p7) ? _elm_lang$core$Native_Utils.update(
 						i,
 						{sku: model.skuField, name: model.nameField, description: model.descriptionField}) : i;
 				};
-				var item$ = A4(_user$project$Main$Item, _p6, model.skuField, model.nameField, model.descriptionField);
+				var item$ = A4(_user$project$Main$Item, _p7, model.skuField, model.nameField, model.descriptionField);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -9908,8 +9951,8 @@ var _user$project$Main$Update = function (a) {
 	return {ctor: 'Update', _0: a};
 };
 var _user$project$Main$editButton = function (model) {
-	var _p7 = model.editMode;
-	if (_p7.ctor === 'AddMode') {
+	var _p8 = model.editMode;
+	if (_p8.ctor === 'AddMode') {
 		return A2(
 			_elm_lang$html$Html$button,
 			_elm_lang$core$Native_List.fromArray(
