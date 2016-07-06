@@ -53,7 +53,6 @@ type Msg = Edit Int
          | UpdateItemFail Http.RawError
          | UpdateItemSucceed Res1
          | PhoenixMsg (Phoenix.Socket.Msg Msg)
-         | ReceiveChatMessage Json.Value
          | DeleteItemMessage Json.Value
          | JoinChannel
 
@@ -146,12 +145,6 @@ update msg model =
                 , Cmd.map PhoenixMsg phxCmd
                 )
 
-        ReceiveChatMessage raw -> (model, Cmd.none)
-            --case decodeValue chatMessageDecoder raw of
-                --Ok chatMessage ->
-                    --( { model | messages = chatMessage :: model.messages }
-                    --, Cmd.none
-                    --)
         DeleteItemMessage raw ->
             case decodeValue deleteItemMessageDecoder raw of
                 Ok {id} ->
@@ -160,6 +153,7 @@ update msg model =
 
         Delete id ->
             ({ model | items = List.filter (\i -> i.id /= id) model.items }, (deleteItem id))
+
         Edit id ->
             let
                 items = List.filter (\i -> i.id == id) model.items
@@ -378,7 +372,6 @@ initPhxSocket : Phoenix.Socket.Socket Msg
 initPhxSocket =
     Phoenix.Socket.init socketServer
         |> Phoenix.Socket.withDebug
-        |> Phoenix.Socket.on "new:msg" "room:lobby" ReceiveChatMessage
         |> Phoenix.Socket.on "item:delete" "room:lobby" DeleteItemMessage
 
 

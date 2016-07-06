@@ -23,7 +23,11 @@ CLOSED: [2016-06-22 Wed 21:03]
 CLOSED: [2016-06-23 Thu 08:05]
 ** DONE insert via REST API
 CLOSED: [2016-06-22 Wed 22:13]
-** TODO connect via Phoenix web socket API
+** DONE connect via Phoenix web socket API
+CLOSED: [2016-07-05 Tue 08:46]
+** TODO delete item via websocket
+** TODO update item via websocket
+** TODO add item via websocket
 ** TODO check TodoMVC with firebase
 ** TODO how to manage flash messages (errors, info, etc.)
 ** TODO howto modularize the app, directory structure
