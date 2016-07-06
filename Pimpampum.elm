@@ -54,6 +54,7 @@ type Msg = Edit Int
          | UpdateItemSucceed Res1
          | PhoenixMsg (Phoenix.Socket.Msg Msg)
          | DeleteItemMessage Json.Value
+         | AddItemMessage Json.Value
          | JoinChannel
 
 type alias Model =
@@ -149,6 +150,15 @@ update msg model =
             case decodeValue deleteItemMessageDecoder raw of
                 Ok {id} ->
                     ({ model | items = List.filter (\i -> (toString i.id) /= id) model.items }, Cmd.none)
+                _ -> ({ model | skuField = "this is a test"} , Cmd.none )
+
+        AddItemMessage raw ->
+            case decodeValue itemDecoder raw of
+                Ok item ->
+                    let
+                        item' = newItem item.id item.sku item.name item.description
+                    in
+                        ({ model | items = item' :: model.items }, Cmd.none )
                 _ -> ({ model | skuField = "this is a test"} , Cmd.none )
 
         Delete id ->
@@ -373,6 +383,7 @@ initPhxSocket =
     Phoenix.Socket.init socketServer
         |> Phoenix.Socket.withDebug
         |> Phoenix.Socket.on "item:delete" "room:lobby" DeleteItemMessage
+        |> Phoenix.Socket.on "item:add" "room:lobby" AddItemMessage
 
 
 deleteItemMessageDecoder : Decoder ItemId
