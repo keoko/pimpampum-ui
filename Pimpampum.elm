@@ -55,6 +55,7 @@ type Msg = Edit Int
          | PhoenixMsg (Phoenix.Socket.Msg Msg)
          | DeleteItemMessage Json.Value
          | AddItemMessage Json.Value
+         | UpdateItemMessage Json.Value
          | JoinChannel
 
 type alias Model =
@@ -150,7 +151,7 @@ update msg model =
             case decodeValue deleteItemMessageDecoder raw of
                 Ok {id} ->
                     ({ model | items = List.filter (\i -> (toString i.id) /= id) model.items }, Cmd.none)
-                _ -> ({ model | skuField = "this is a test"} , Cmd.none )
+                _ -> ({ model | skuField = "todo: handle deleteitemmessage error"} , Cmd.none )
 
         AddItemMessage raw ->
             case decodeValue itemDecoder raw of
@@ -159,7 +160,16 @@ update msg model =
                         item' = newItem item.id item.sku item.name item.description
                     in
                         ({ model | items = item' :: model.items }, Cmd.none )
-                _ -> ({ model | skuField = "this is a test"} , Cmd.none )
+                _ -> ({ model | skuField = "todo: handle additemmessage error"} , Cmd.none )
+
+        UpdateItemMessage raw ->
+            case decodeValue itemDecoder raw of
+                Ok item ->
+                    let
+                        item' = newItem item.id item.sku item.name item.description
+                    in
+                        ({ model | items = (updateItemInList model.items item') }, Cmd.none )
+                _ -> ({ model | skuField = "todo: handle updateitemmessage error"} , Cmd.none )
 
         Delete id ->
             ({ model | items = List.filter (\i -> i.id /= id) model.items }, (deleteItem id))
@@ -192,21 +202,9 @@ update msg model =
             }, (addItem item'))
         Update id ->
             let
-                -- todo use item' in updateItem local function
-                item' =
-                    Item id model.skuField model.nameField model.descriptionField
-
-                update i =
-                    if i.id == id then
-                        { i |
-                          sku = model.skuField
-                        , name = model.nameField
-                        , description = model.descriptionField
-                        }
-                    else
-                        i
+                item' = Item id model.skuField model.nameField model.descriptionField
             in
-                ({ model | items = List.map update model.items }, (updateItem item'))
+                ({ model | items = (updateItemInList model.items item')}, (updateItem item'))
         Sku sku ->
             ({ model | skuField = sku }, Cmd.none)
         Name name ->
@@ -384,8 +382,26 @@ initPhxSocket =
         |> Phoenix.Socket.withDebug
         |> Phoenix.Socket.on "item:delete" "room:lobby" DeleteItemMessage
         |> Phoenix.Socket.on "item:add" "room:lobby" AddItemMessage
+        |> Phoenix.Socket.on "item:update" "room:lobby" UpdateItemMessage
 
 
 deleteItemMessageDecoder : Decoder ItemId
 deleteItemMessageDecoder =
     object1 ItemId ("id" := string)
+
+
+
+updateItemInList items item =
+    let
+        -- todo use item' in updateItem local function
+        update i =
+            if i.id == item.id then
+                { i |
+                  sku = item.sku
+                , name = item.name
+                , description = item.description
+                }
+            else
+                i
+    in
+        List.map update items
