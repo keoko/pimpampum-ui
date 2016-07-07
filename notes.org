@@ -25,11 +25,18 @@ CLOSED: [2016-06-23 Thu 08:05]
 CLOSED: [2016-06-22 Wed 22:13]
 ** DONE connect via Phoenix web socket API
 CLOSED: [2016-07-05 Tue 08:46]
-** TODO delete item via websocket
-** TODO update item via websocket
-** TODO add item via websocket
+** DONE delete item via websocket
+CLOSED: [2016-07-06 Wed 19:59]
+** DONE update item via websocket
+CLOSED: [2016-07-06 Wed 20:38]
+** DONE add item via websocket
+CLOSED: [2016-07-06 Wed 20:38]
+** TODO add item image
+** DONE use "channel:item" instead of "room:lobby"
+CLOSED: [2016-07-07 Thu 08:02]
 ** TODO check TodoMVC with firebase
 ** TODO how to manage flash messages (errors, info, etc.)
+** TODO handle error messages
 ** TODO howto modularize the app, directory structure
 ** TODO unit testing
 ** TODO pessimistic vs optimistic update actions

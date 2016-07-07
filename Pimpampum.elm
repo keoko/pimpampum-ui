@@ -16,8 +16,10 @@ host : String
 host = "http://localhost:4000"
 
 socketServer : String
-socketServer =
-    "ws://localhost:4000/socket/websocket"
+socketServer = "ws://localhost:4000/socket/websocket"
+
+channelName : String
+channelName = "channel:item"
 
 main : Program Never
 main =
@@ -131,7 +133,7 @@ update msg model =
     case msg of
         JoinChannel ->
             let
-                channel = Phoenix.Channel.init "room:lobby"
+                channel = Phoenix.Channel.init channelName
                 ( phxSocket, phxCmd ) = Phoenix.Socket.join channel model.phxSocket
             in
                 ( { model | phxSocket = phxSocket }
@@ -380,9 +382,9 @@ initPhxSocket : Phoenix.Socket.Socket Msg
 initPhxSocket =
     Phoenix.Socket.init socketServer
         |> Phoenix.Socket.withDebug
-        |> Phoenix.Socket.on "item:delete" "room:lobby" DeleteItemMessage
-        |> Phoenix.Socket.on "item:add" "room:lobby" AddItemMessage
-        |> Phoenix.Socket.on "item:update" "room:lobby" UpdateItemMessage
+        |> Phoenix.Socket.on "item:delete" channelName DeleteItemMessage
+        |> Phoenix.Socket.on "item:add" channelName AddItemMessage
+        |> Phoenix.Socket.on "item:update" channelName UpdateItemMessage
 
 
 deleteItemMessageDecoder : Decoder ItemId

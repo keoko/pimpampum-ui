@@ -9524,6 +9524,7 @@ var _user$project$Main$newItem = F4(
 	function (uid, sku, name, description) {
 		return {id: uid, sku: sku, name: name, description: description};
 	});
+var _user$project$Main$channelName = 'channel:item';
 var _user$project$Main$socketServer = 'ws://localhost:4000/socket/websocket';
 var _user$project$Main$host = 'http://localhost:4000';
 var _user$project$Main$ItemId = function (a) {
@@ -9572,17 +9573,17 @@ var _user$project$Main$DeleteItemMessage = function (a) {
 var _user$project$Main$initPhxSocket = A4(
 	_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
 	'item:update',
-	'room:lobby',
+	_user$project$Main$channelName,
 	_user$project$Main$UpdateItemMessage,
 	A4(
 		_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
 		'item:add',
-		'room:lobby',
+		_user$project$Main$channelName,
 		_user$project$Main$AddItemMessage,
 		A4(
 			_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
 			'item:delete',
-			'room:lobby',
+			_user$project$Main$channelName,
 			_user$project$Main$DeleteItemMessage,
 			_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
 				_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(_user$project$Main$socketServer)))));
@@ -9751,7 +9752,7 @@ var _user$project$Main$update = F2(
 		var _p0 = msg;
 		switch (_p0.ctor) {
 			case 'JoinChannel':
-				var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init('room:lobby');
+				var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init(_user$project$Main$channelName);
 				var _p1 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$join, channel, model.phxSocket);
 				var phxSocket = _p1._0;
 				var phxCmd = _p1._1;
